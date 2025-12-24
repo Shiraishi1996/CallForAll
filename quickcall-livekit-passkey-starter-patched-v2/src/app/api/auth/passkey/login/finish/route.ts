@@ -31,11 +31,11 @@ export async function POST(req: Request) {
       expectedOrigin,
       expectedRPID,
       authenticator: {
-        credentialID: Buffer.from(cred.credentialID, "base64url"),
-        credentialPublicKey: Buffer.from(cred.credentialPublicKey, "base64url"),
+        credentialID: cred.credentialID,
+        credentialPublicKey: Buffer.from(cred.credentialPublicKey, "base64"),
         counter: cred.counter,
-        transports: cred.transports ? cred.transports.split(",").filter(Boolean) : [],
-      },
+        transports: cred.transports ? cred.transports.split(",").filter(Boolean) as any : [],
+      } as any,
     });
 
     if (!verification.verified) {

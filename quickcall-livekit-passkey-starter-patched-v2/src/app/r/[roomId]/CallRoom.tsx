@@ -9,7 +9,7 @@ import {
   ConnectionStateToast,
   useRoomContext,
 } from "@livekit/components-react";
-import { DataPacket_Kind, RoomEvent, ConnectionState } from "livekit-client";
+import { RoomEvent, ConnectionState } from "livekit-client";
 
 type Diag = { at: number; level: "info" | "warn" | "error"; msg: string };
 
@@ -61,13 +61,12 @@ function DiagnosticsPanel({
     room.on(RoomEvent.Reconnecting, onReconn);
     room.on(RoomEvent.Reconnected, onReconned);
     room.on(RoomEvent.SignalConnected, onSig);
-    room.on(RoomEvent.SignalDisconnected, onSigClosed);
+    // SignalDisconnected イベントは存在しないので、Disconnectedイベントで代用
     room.on(RoomEvent.RoomMetadataChanged, onJoined);
     room.on(RoomEvent.ParticipantConnected, (p) => push("info", `ParticipantConnected: ${p.identity}`));
     room.on(RoomEvent.ParticipantDisconnected, (p) => push("warn", `ParticipantDisconnected: ${p.identity}`));
     room.on(RoomEvent.TrackSubscriptionFailed, (sid, err) => push("warn", `TrackSubscriptionFailed: ${sid} ${String(err)}`));
-    room.on(RoomEvent.TrackSubscribed, (t, pub, p) => push("info", `TrackSubscribed: ${p.identity} ${pub.source}`));
-    room.on(RoomEvent.RoomError, onErr);
+    room.on(RoomEvent.TrackSubscribed, (_t, pub, p) => push("info", `TrackSubscribed: ${p.identity} ${pub.source}`));
 
     // after connect, name/identity are available
     setTimeout(() => onJoined(), 200);
@@ -78,9 +77,7 @@ function DiagnosticsPanel({
       room.off(RoomEvent.Reconnecting, onReconn);
       room.off(RoomEvent.Reconnected, onReconned);
       room.off(RoomEvent.SignalConnected, onSig);
-      room.off(RoomEvent.SignalDisconnected, onSigClosed);
       room.off(RoomEvent.RoomMetadataChanged, onJoined);
-      room.off(RoomEvent.RoomError, onErr);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -234,7 +231,7 @@ function ChatPanel() {
     try {
       room.localParticipant.publishData(
         new TextEncoder().encode(JSON.stringify(msg)),
-        DataPacket_Kind.RELIABLE
+        { reliable: true }
       );
       setMessages((prev) => [
         ...prev,

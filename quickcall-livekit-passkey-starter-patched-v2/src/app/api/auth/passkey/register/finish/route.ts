@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { verifyRegistrationResponse } from "@simplewebauthn/server";
 import { prisma } from "@/lib/prisma";
-import { getPasskeyRegState, setSessionUserId } from "@/lib/session";
+import { readPasskeyRegState, setSession, clearPasskeyRegState } from "@/lib/session";
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const state = await getPasskeyRegState();
+    const state = await readPasskeyRegState();
     if (!state) return NextResponse.json({ ok: false, error: "NO_REG_STATE" }, { status: 400 });
 
     const user = await prisma.user.findUnique({ where: { id: state.userId } });
@@ -27,16 +27,17 @@ export async function POST(req: Request) {
 
     const { credentialID, credentialPublicKey, counter } = verification.registrationInfo;
 
-    await prisma.passkeyCredential.create({
+    await prisma.credential.create({
       data: {
         userId: user.id,
-        credentialID: Buffer.from(credentialID),
-        credentialPublicKey: Buffer.from(credentialPublicKey),
+        credentialID: Buffer.from(credentialID).toString('base64'),
+        credentialPublicKey: Buffer.from(credentialPublicKey).toString('base64'),
         counter,
       },
     });
 
-    await setSessionUserId(user.id);
+    await setSession(user.id);
+    await clearPasskeyRegState();
     return NextResponse.json({ ok: true });
   } catch (e: any) {
     console.error("register/finish failed:", e);

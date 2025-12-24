@@ -170,7 +170,7 @@ export default function RoomClient({ roomId }: { roomId: string }) {
         </div>
         {!serverUrl && (
           <div style={{ marginTop: 8, color: "#8a1f1f", fontSize: 12 }}>
-            .env に NEXT_PUBLIC_LIVEKIT_URL="wss://....livekit.cloud" を追加し、devサーバを再起動してください。
+            .env に NEXT_PUBLIC_LIVEKIT_URL=&quot;wss://....livekit.cloud&quot; を追加し、devサーバを再起動してください。
           </div>
         )}
         {serverUrl && !urlOk && (
