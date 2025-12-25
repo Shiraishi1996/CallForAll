@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: quickcall-livekit
+    runtime: node
+    repo: https://github.com/Shiraishi1996/CallForAll
+    branch: main
+    rootDir: quickcall-livekit-passkey-starter-patched-v2
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: quickcall-db
+          property: connectionString
+      - key: LIVEKIT_URL
+        value: wss://meet.livekit.io
+      - key: LIVEKIT_API_KEY
+        value: APIw4Zf8hCQgqBt
+      - key: LIVEKIT_API_SECRET
+        value: UKpboWpMdujPkMHnFQoNRH8vETQuLGhxP3FHo4PWqvRf
+      - key: NEXT_PUBLIC_LIVEKIT_URL
+        value: wss://meet.livekit.io
+      - key: WEBAUTHN_RP_ID
+        value: quickcall.onrender.com
+      - key: WEBAUTHN_ORIGIN
+        value: https://quickcall.onrender.com
+      - key: WEBAUTHN_RP_NAME
+        value: QuickCall
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000
+
+databases:
+  - name: quickcall-db
+    plan: free
+    databaseName: quickcall
+    user: quickcall
+    ipAllowList: []

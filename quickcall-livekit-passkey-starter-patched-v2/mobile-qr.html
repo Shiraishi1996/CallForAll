@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickCall - スマホでアクセス</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .qr-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .qr-code {
+            width: 280px;
+            height: 280px;
+            margin: 0 auto;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+        }
+        .scan-text {
+            margin-top: 20px;
+            color: #555;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .scan-icon {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .url-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        .url-label {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .url {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            word-break: break-all;
+            display: block;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+            transition: all 0.3s;
+        }
+        .url:hover {
+            background: #667eea;
+            color: white;
+        }
+        .copy-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        .copy-button:hover {
+            transform: translateY(-2px);
+        }
+        .copy-button.copied {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        }
+        .access-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+        }
+        .access-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(245, 87, 108, 0.4);
+        }
+        .features {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .feature {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        .feature:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .feature-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        .instructions {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        .instructions ol {
+            color: #856404;
+            font-size: 14px;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        .status {
+            display: inline-block;
+            background: #00b894;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .device-icons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="status">● オンライン</span>
+        <h1>📱 QuickCall</h1>
+        <p class="subtitle">ビデオ通話アプリケーション</p>
+
+        <div class="qr-container">
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://unarticulative-adella-unprostrated.ngrok-free.dev" alt="QR Code">
+            </div>
+            <div class="scan-text">
+                <span class="scan-icon">📷</span>
+                <span>カメラでQRコードをスキャン</span>
+            </div>
+        </div>
+
+        <div class="url-container">
+            <div class="url-label">公開URL</div>
+            <a href="https://unarticulative-adella-unprostrated.ngrok-free.dev" class="url" target="_blank" id="app-url">
+                https://unarticulative-adella-unprostrated.ngrok-free.dev
+            </a>
+            <button class="copy-button" onclick="copyURL()">📋 URLをコピー</button>
+        </div>
+
+        <a href="https://unarticulative-adella-unprostrated.ngrok-free.dev" class="access-button" target="_blank">
+            🚀 アプリを開く
+        </a>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎥</div>
+                <div class="feature-title">ビデオ通話</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎤</div>
+                <div class="feature-title">音声通話</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💬</div>
+                <div class="feature-title">チャット</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">モバイル対応</div>
+            </div>
+        </div>
+
+        <div class="device-icons">
+            <span title="iPhone">📱</span>
+            <span title="iPad">📲</span>
+            <span title="Android">🤖</span>
+            <span title="PC">💻</span>
+        </div>
+
+        <div class="instructions">
+            <h3>📌 かんたん使い方ガイド</h3>
+            <ol>
+                <li>上のQRコードをスマホでスキャン（またはURLをタップ）</li>
+                <li>ルームIDを入力または「Generate」で自動生成</li>
+                <li>「Join」ボタンをタップして通話開始</li>
+                <li>同じルームIDを友達に共有して参加してもらう</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function copyURL() {
+            const url = 'https://unarticulative-adella-unprostrated.ngrok-free.dev';
+            const button = document.querySelector('.copy-button');
+
+            navigator.clipboard.writeText(url).then(() => {
+                button.textContent = '✅ コピー完了！';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = '📋 URLをコピー';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                // フォールバック
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                button.textContent = '✅ コピー完了！';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = '📋 URLをコピー';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // ページロード時にアニメーション
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                container.style.transition = 'all 0.5s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

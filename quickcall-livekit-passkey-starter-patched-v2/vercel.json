@@ -1,0 +1,39 @@
+{
+  "buildCommand": "npx prisma generate && npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "regions": ["iad1", "sfo1", "sin1"],
+  "functions": {
+    "src/app/api/livekit/token/route.ts": {
+      "maxDuration": 10
+    },
+    "src/app/api/auth/*/route.ts": {
+      "maxDuration": 10
+    }
+  },
+  "env": {
+    "LIVEKIT_URL": "wss://meet.livekit.io",
+    "LIVEKIT_API_KEY": "APIw4Zf8hCQgqBt",
+    "LIVEKIT_API_SECRET": "UKpboWpMdujPkMHnFQoNRH8vETQuLGhxP3FHo4PWqvRf",
+    "NEXT_PUBLIC_LIVEKIT_URL": "wss://meet.livekit.io"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}
